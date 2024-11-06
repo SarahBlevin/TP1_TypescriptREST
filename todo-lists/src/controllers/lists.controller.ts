@@ -1,5 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { ITodoList } from "../interfaces"
+import { ITodoItem } from "../interfaces"
+
 
 // Static Version
 /*
@@ -83,6 +85,37 @@ export async function updateList(
       reply.status(500).send({ error: "An error occurred" });
   }
 }
+
+//☑️ POST    /lists/:id/items → Ajouter un item à une liste
+
+export async function addItem(
+  request: FastifyRequest, 
+  reply: FastifyReply
+) {
+  const { id } = request.params as { id: string };
+  const item = request.body as ITodoItem;
+
+  try {
+    const existingListRaw = await this.level.db.get(id);
+    const existingList = JSON.parse(existingListRaw) as ITodoList;
+
+    // Merge 
+    const updatedList = { ...existingList, items: [...existingList.items, item] };
+
+    // Save 
+    await this.level.db.put(id, JSON.stringify(updatedList));
+
+    reply.status(200).send({ data: updatedList });
+  } catch (error) {
+    reply.status(500).send({ error: "An error occurred" });
+  }
+}
+
+
+
+
+
+
 
 
 
