@@ -11,7 +11,9 @@ async function lists(fastify: FastifyInstance) {
 
   fastify.post('/:id/items', listsController.addItem)
 
-  //fastify.delete('/:id/items/:id', listsController.removeItem)
+  fastify.delete('/:id/items/:itemId', listsController.deleteItem)
+
+  fastify.put('/:id/items/:itemId', listsController.updateItem)
 }
 
 export default lists
