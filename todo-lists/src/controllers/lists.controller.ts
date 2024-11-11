@@ -86,8 +86,6 @@ export async function updateList(
   }
 }
 
-//☑️ POST    /lists/:id/items → Ajouter un item à une liste
-
 export async function addItem(
   request: FastifyRequest, 
   reply: FastifyReply
@@ -119,20 +117,20 @@ export async function deleteItem(
   const { id, itemId } = request.params as { id: string, itemId: string };
 
   try {
-    // Fetch the list by its ID
+
     const existingListRaw = await this.level.db.get(id);
     const existingList = JSON.parse(existingListRaw) as ITodoList;
 
-    // Check if the item exists in the list
+    // Check if the item
     const itemIndex = existingList.items.findIndex(item => item.id === itemId);
     if (itemIndex === -1) {
       return reply.status(404).send({ error: `Item with id ${itemId} not found in list ${id}` });
     }
 
-    // Remove the item from the list
+    // Remove
     existingList.items.splice(itemIndex, 1);
 
-    // Update the list in the database
+    // Update
     await this.level.db.put(id, JSON.stringify(existingList));
 
     reply.status(200).send({ data: existingList });
@@ -150,7 +148,6 @@ export async function updateItem(
   const updates = request.body as Partial<ITodoItem>;
 
   try {
-    // Fetch the list by its ID
     const existingListRaw = await request.server.level.db.get(id);
     const existingList = JSON.parse(existingListRaw) as ITodoList;
 
@@ -160,11 +157,11 @@ export async function updateItem(
       return reply.status(404).send({ error: `Item with id ${itemId} not found in list ${id}` });
     }
 
-    // Update the item properties
+    // Update
     const updatedItem = { ...existingList.items[itemIndex], ...updates };
     existingList.items[itemIndex] = updatedItem;
 
-    // Save the updated list back to the database
+    // Save
     await request.server.level.db.put(id, JSON.stringify(existingList));
 
     reply.status(200).send({ data: updatedItem });
